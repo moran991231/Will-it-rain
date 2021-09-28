@@ -10,10 +10,10 @@
 
 # 참여 인원
 
-* 박재선 [@moran991231](https://github.com/moran991231)
-* 강다현 [@ddheyon](https://github.com/ddhyeon)
-* 강형원 [@HyungWonKang](https://github.com/HyungWonKang)
-* 유영호 [@younghoyk](https://github.com/younghoyk)
+* 박재선 [@moran991231](https://github.com/moran991231) : 팀장, 환경구축
+* 강다현 [@ddheyon](https://github.com/ddhyeon) : git 관리
+* 강형원 [@HyungWonKang](https://github.com/HyungWonKang) : ptt, YouTube 제작
+* 유영호 [@younghoyk](https://github.com/younghoyk) : 보고서 작성 관리
 
 # 보고서 공유용 쉐어포인트 (미정)
 
