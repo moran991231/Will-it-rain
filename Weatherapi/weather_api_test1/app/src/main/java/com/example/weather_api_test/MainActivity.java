@@ -14,19 +14,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        // the usage of api
         apiTest at = new apiTest();
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    at.func();
-                }catch(IOException | JSONException e){
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        int ret = at.isGoingToRain("20211105", "2000", 10, 61, 127);
+        System.out.println("@@@@@@@ ret: " + ret);
     }
 }
