@@ -9,16 +9,21 @@ import java.net.URL;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+
 public class apiTest extends Thread{
     public void func() throws IOException, JSONException {
         String endPoint =  "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/";
         String serviceKey = "djeHjpQmJi0AcVGpgRiJTye33OLW9G6EemWpzGl0tGfTGm3XqYszCpgFO1HlNxodPByX7N6NZLmug4E4HvNv8g%3D%3D";
         String pageNo = "1";
         String numOfRows = "10";
-        String baseDate = "20211029"; //원하는 날짜, 초단기 예보로 당일 것만 해당
-        String baseTime = "2000"; //원하는 시간, 3시간 단위로 검색
-        String nx = "98"; //위경도임.
-        String ny = "77"; //위경도 정보는 api문서 볼 것
+        String baseDate = getTime(); //초단기 예보로 당일 것만 해당
+        String baseTime = getTime1(); // 0500 기준으로 3시간 단위로 검색
+        String nx = "61"; //위경도임.
+        String ny = "127"; //위경도 정보는 api문서 볼 것.
 
         String s = endPoint+"getVilageFcst?"+
                 "serviceKey="+serviceKey
@@ -56,7 +61,60 @@ public class apiTest extends Thread{
             JSONObject item = itemArray.getJSONObject(i);
             String category = item.getString("category");
             String value = item.getString("fcstValue");
-            System.out.println(category+"  "+value);
+            if(category.equals("POP")){
+                System.out.println(category + "  " + value);
+            }
+        }
+    }
+
+    private String getTime1() {
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
+        String getTime1 = timeFormat.format(date);
+
+        long getTime2 = Long.parseLong(getTime1);
+
+        if ((getTime2 <= 210) || (getTime2 >= 2311)) {
+            return "2300";
+        } else if (getTime2 <= 510) {
+            return "0200";
+        } else if (getTime2 <= 810) {
+            return "0500";
+        } else if (getTime2 <= 1110) {
+            return "0800";
+        } else if (getTime2 <= 1410) {
+            return "1100";
+        } else if (getTime2 <= 1710) {
+            return "1400";
+        } else if (getTime2 <= 2010) {
+            return "1700";
+        } else {
+            return "2000";
+        }
+    }
+
+    private String getTime() {
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String getTime = dateFormat.format(date);
+
+        long right = System.currentTimeMillis();
+        Date date1 = new Date(right);
+        SimpleDateFormat time1Format = new SimpleDateFormat("HHmm");
+        String getTime3 = time1Format.format(date1);
+
+        long getTime4 = Long.parseLong(getTime);
+        long getTime5 = Long.parseLong(getTime3);
+
+        if (getTime5 <= 210) {
+            long a = (getTime4 - 1);
+            String getTime6 = Long.toString(a);
+            return getTime6;
+        }
+        else {
+            return getTime;
         }
     }
 }

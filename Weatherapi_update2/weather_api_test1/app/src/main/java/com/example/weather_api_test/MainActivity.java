@@ -1,46 +1,47 @@
 package com.example.weather_api_test;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import android.os.Bundle;
+import org.json.JSONException;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
+import androidx.core.app.ActivityCompat;
+import android.widget.Toast;
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+
+
 
 public class MainActivity extends AppCompatActivity {
+
+    static final int PERMISSIONS_REQUEST = 0x0000001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        OnCheckPermission();
-        Button btn = (Button)findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // the usage of api
-                Weather at = new Weather();
-                int ret = at.isGoingToRain(24, 61, 127); // Jeju Island
-                System.out.println("@@@@@@@ ret: " + ret);
 
-                MyNotification myNoti = new MyNotification(MainActivity.this, MyNotification.DefaultNotiID);
-                String text = at.makeNotificatoinText(10, ret); // duration: hours
-                myNoti.makeNotification("Will it rain?", text);
+        OnCheckPermission();
+
+        apiTest at = new apiTest();
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    at.func();
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
-
     }
 
-    static final int PERMISSIONS_REQUEST = 0x0000001;
 
     public void OnCheckPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
+                PackageManager.PERMISSION_GRANTED){
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
