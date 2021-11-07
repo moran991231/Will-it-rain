@@ -112,6 +112,14 @@ public class apiTest extends Thread {
         return ret;
     }
 
+    public String makeNotificatoinText(int duration, int maxPop){
+        String str = "There's an error";
+        if(maxPop==ERROR)
+            return str;
+        str = String.format("향후 %d시간 내의 최대 강수확률은 %d%입니다.", duration, maxPop);
+        return str;
+    }
+
     // example code
     private void func() throws IOException, JSONException {
         URL url = makeURL(1, 10, "20211105", "0500", 55, 127);
