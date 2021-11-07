@@ -1,4 +1,4 @@
-package com.example.my2;
+package com.example.x_and_y.file;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
