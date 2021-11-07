@@ -17,7 +17,12 @@ public class MainActivity extends AppCompatActivity {
 
         // the usage of api
         apiTest at = new apiTest();
-        int ret = at.isGoingToRain("20211107", "1700", 10, 61, 127);
+        int ret = at.isGoingToRain("20211107", "1700", 24, 61, 127);
         System.out.println("@@@@@@@ ret: " + ret);
+
+        MyNotification myNoti = new MyNotification(this, MyNotification.DefaultNotiID);
+        String text = at.makeNotificatoinText(10, ret);
+        myNoti.makeNotification("hey", text);
+
     }
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class apiTest extends Thread {
 
@@ -77,9 +78,6 @@ public class apiTest extends Thread {
     private int ret; // used in getPop() and isGoingToRain()
 
     private void calculatePops(String baseDate, String baseTime, int duration, int x, int y) {
-
-        ret = -1000;
-
         int[] pops = new int[duration];
         int offset = 8;
         try {
@@ -102,6 +100,7 @@ public class apiTest extends Thread {
 
     // use this function to get the max of pop 0~100 (integer)
     public int isGoingToRain(String baseDate, String baseTime, int duration, int x, int y) {
+        ret = -1000;
         ExecutorService ex = Executors.newSingleThreadExecutor();
         ex.execute(new Runnable() {
             @Override
@@ -109,14 +108,20 @@ public class apiTest extends Thread {
                 calculatePops(baseDate, baseTime, duration, x, y);
             }
         });
+
+        try {
+            ex.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return ret;
     }
 
     public String makeNotificatoinText(int duration, int maxPop){
         String str = "There's an error";
-        if(maxPop==ERROR)
+        if(maxPop<0 || 100<maxPop)
             return str;
-        str = String.format("향후 %d시간 내의 최대 강수확률은 %d%입니다.", duration, maxPop);
+        str = String.format("향후 %d시간 내의 최대 강수확률은 %d%%입니다.", duration, maxPop);
         return str;
     }
 
