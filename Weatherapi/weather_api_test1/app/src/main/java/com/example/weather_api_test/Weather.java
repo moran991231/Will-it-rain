@@ -77,7 +77,7 @@ public class Weather extends Thread {
 
         // wait executor
         try {
-            ex.awaitTermination(20, TimeUnit.SECONDS);
+            ex.awaitTermination(2, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
