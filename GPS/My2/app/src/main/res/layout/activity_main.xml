@@ -17,11 +17,10 @@
         android:text="결과창"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <ToggleButton
+    <Button
         android:id="@+id/toggle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOff="위치정보수신시작"
-        android:textOn="위치정보수신종료"/>
+        android:text="위치정보수신시작"/>
 
 </LinearLayout>
