@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -32,8 +33,9 @@ public class MyAlarm extends BroadcastReceiver {
     public static int hour = -1, min = -1;
     private MainActivity mainActivity;
     private String channelId = "alarm_channel";
+    private final String channelName = "Probability of Rainfall"; // don't change
     private static int times;
-    AlarmManager alarmManager;
+    private AlarmManager alarmManager;
 
     public MyAlarm() {
     }
@@ -41,39 +43,27 @@ public class MyAlarm extends BroadcastReceiver {
     public MyAlarm(MainActivity m) {
         mainActivity = m;
         alarmManager = (AlarmManager) mainActivity.getSystemService(Context.ALARM_SERVICE);
+
     }
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        Intent busRouteIntent = new Intent(context, MainActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(busRouteIntent);
-        PendingIntent busRoutePendingIntent =
-                stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        long now = System.currentTimeMillis();
-        String str = new SimpleDateFormat("yyyy MM dd HH:mm| ").format(new Date(now));
-        // notification generate
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher).setDefaults(Notification.DEFAULT_ALL)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setAutoCancel(true)
-                .setContentTitle("메롱")
-                .setContentText(str + times + "번째")
-                .setContentIntent(busRoutePendingIntent);
-
-        times++;
-        final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, "Rainfall", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        int id = (int) System.currentTimeMillis();
-
-        notificationManager.notify(id, notificationBuilder.build());
+        Log.d("Alarm", "@@@@@@ Alram begin @@@@@");
+//        long now = System.currentTimeMillis();
+//        Weather wth = new Weather();
+//        int pop = wth.isGoingToRain(24, 61,127, now );
+//        System.out.println("@@@@@@@ pop: " + pop);
+//
+//        String str = wth.makeNotificatoinText(2, pop);
+//        MyNotification myNoti = new MyNotification(context,(int) now );
+//
+//        // notification generate
+//        myNoti.makeNotification("Will it rain?", str);
+        MyBackgroundThread th = new MyBackgroundThread();
+        th.setContext(context);
+        th.start();
+        Log.d("Alarm", "@@@@@@ Alram end @@@@@");
     }
 
     public void setAlarm(int hour, int minute) {
