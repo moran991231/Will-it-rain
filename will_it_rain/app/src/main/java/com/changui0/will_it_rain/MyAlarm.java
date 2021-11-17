@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
 public class MyAlarm extends BroadcastReceiver {
     public static final String fileName = "alarmTime.txt";
     public static int hour = -1, min = -1;
-    private Context mainActivity;
+    private Context context;
     private String channelId = "alarm_channel";
     private final String channelName = "Probability of Rainfall"; // don't change
     private static int times;
@@ -28,9 +28,9 @@ public class MyAlarm extends BroadcastReceiver {
     public MyAlarm() {
     }
 
-    public MyAlarm(Context m) {
-        mainActivity = m;
-        alarmManager = (AlarmManager) mainActivity.getSystemService(Context.ALARM_SERVICE);
+    public MyAlarm(Context context) {
+        this.context = context;
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
     }
 
@@ -60,20 +60,20 @@ public class MyAlarm extends BroadcastReceiver {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, alarmIntent);
         String str = String.format("알림이 %d시 %d분에 저장되었습니다.", hour, minute);
-        Toast.makeText(mainActivity, str, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, str, Toast.LENGTH_LONG).show();
 
     }
 
     public void cancelAlarm() {
         if (alarmManager == null) return;
         alarmManager.cancel(getAlamPIntent(1));
-        Toast.makeText(mainActivity, "Alarm is canceled", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Alarm is canceled", Toast.LENGTH_LONG).show();
     }
 
     public PendingIntent getAlamPIntent(int reqCode) {
-        Intent intent = new Intent(mainActivity, MyAlarm.class);
+        Intent intent = new Intent(context, MyAlarm.class);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent ret = PendingIntent.getBroadcast(mainActivity, reqCode, intent, flags);
+        PendingIntent ret = PendingIntent.getBroadcast(context, reqCode, intent, flags);
         return ret;
     }
 
@@ -88,7 +88,7 @@ public class MyAlarm extends BroadcastReceiver {
 
     public void writeTime() {
         try {
-            OutputStreamWriter oStreamWriter = new OutputStreamWriter(mainActivity.openFileOutput(fileName, Context.MODE_PRIVATE));
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE));
             oStreamWriter.write(String.format("%d %d", hour, min));
             oStreamWriter.close();
         } catch (IOException e) {
@@ -98,7 +98,7 @@ public class MyAlarm extends BroadcastReceiver {
 
     public void readTime() {
         try {
-            InputStream iStream = mainActivity.openFileInput(fileName);
+            InputStream iStream = context.openFileInput(fileName);
             if (iStream != null) {
                 InputStreamReader iStreamReader = new InputStreamReader(iStream);
                 BufferedReader bufferedReader = new BufferedReader(iStreamReader);

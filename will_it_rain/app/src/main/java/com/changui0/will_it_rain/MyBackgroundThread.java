@@ -13,13 +13,12 @@ public class MyBackgroundThread extends Thread {
     public void run() {
         long now = System.currentTimeMillis();
         Weather wth = new  Weather();
-         MyGps myGps = new  MyGps((MainActivity) context);
+         MyGps myGps = new  MyGps(MainActivity.mainActivity);
         if(! MyGps.isXyValid()){
             myGps.readXy();
         }
 
-//        int pop = wth.isGoingToRain(24,  MyGps.x,  MyGps.y, now);
-        int pop = wth.isGoingToRain(24,  60    ,  127, now);
+        int pop = wth.isGoingToRain(24,  MyGps.x,  MyGps.y, now);
         System.out.println("@@@@@@@ pop: " + pop);
 
         String str = wth.makeNotificatoinText(24, pop);

@@ -8,25 +8,33 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
 
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
     Intent intent;
     public static MainActivity mainActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mainActivity=this;
+        mainActivity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         OnCheckPermission();
         Button btn = (Button) findViewById(R.id.gotoTimePicker);
         intent = new Intent(MainActivity.this, AlarmActivity.class);
 
-        btn.setOnClickListener(v->{
+        btn.setOnClickListener(v -> {
             {
                 startActivity(intent);
             }
@@ -36,15 +44,29 @@ public class MainActivity extends AppCompatActivity {
         MyGps gps = new MyGps(this);
         gps.readXy();
         btn = (Button) findViewById(R.id.getLoc);
-        btn.setOnClickListener(v->{
-            MyGps myGps = new MyGps(MainActivity.this);
-            myGps.enableGps();
+        btn.setOnClickListener(v -> {
+            FusedLocationProviderClient flc = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }else{
+                flc.getLastLocation().addOnSuccessListener(MainActivity.this, location -> {
+                    MyGps myGps = new MyGps(MainActivity.this);
+                    if (location != null)
+                        myGps.setXyFromLocation(location);
+                    else
+                        myGps.enableGps();
+                });
+            }
+
         });
     }
-    final int PERMISSIONS_REQUEST=1;
+
+    final int PERMISSIONS_REQUEST = 1;
+
     public void OnCheckPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
@@ -55,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grandResults) {

@@ -83,8 +83,8 @@ public class Weather extends Thread {
         sb.append("&pageNo=").append(pageNo);
         sb.append("&numOfRows=").append(numRow);
         sb.append("&dataType=").append("JSON");
-        sb.append("&base_date=").append(date);
-        sb.append("&base_time=").append(time);
+        sb.append("&base_date=").append(String.format("%02d",date));
+        sb.append("&base_time=").append(String.format("%02d",time));
         sb.append("&nx=").append(x);
         sb.append("&ny=").append(y);
         URL url;
@@ -99,8 +99,8 @@ public class Weather extends Thread {
 
     private int getPop(ApiBaseTime bt, int page, int x, int y) {
         StringBuilder stringBuilder = new StringBuilder();
+        URL url = makeURL(page, 1, bt.baseDate, bt.baseTime, x, y);
         try {
-            URL url = makeURL(page, 1, bt.baseDate, bt.baseTime, x, y);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
@@ -125,6 +125,7 @@ public class Weather extends Thread {
 
         } catch (Exception e) {
             Log.d("Api Error", stringBuilder.toString());
+            Log.d("Api Error Url", url.toString());
             return ERROR;
         }
     }

@@ -41,18 +41,22 @@ public class MyGps {
 
     private final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(@NonNull Location location) {
-            double longitude = location.getLongitude(); //경도
-            double latitude = location.getLatitude();   //위도
-            LlXyConverter.init();
-            Point2D point = LlXyConverter.LonLat2xy(longitude, latitude);
-            x = (int) point.x;
-            y = (int) point.y;
-            writeXy();
-            Log.d("GPS", String.format("(x,y) is (%d, %d)", x, y));
+            setXyFromLocation(location);
             lm.removeUpdates(mLocationListener);  //  미수신할때는 반드시 자원해체를 해주어야 한다
-            Toast.makeText(mainActivity, "Location set!", Toast.LENGTH_LONG).show();
         }
     };
+    public void setXyFromLocation(Location location){
+
+        double longitude = location.getLongitude(); //경도
+        double latitude = location.getLatitude();   //위도
+        LlXyConverter.init();
+        Point2D point = LlXyConverter.LonLat2xy(longitude, latitude);
+        x = (int) point.x;
+        y = (int) point.y;
+        writeXy();
+        Log.d("GPS", String.format("(x,y) is (%d, %d)", x, y));
+        Toast.makeText(mainActivity, "Location set!", Toast.LENGTH_LONG).show();
+    }
 
     private void writeXy() {
         try {
