@@ -1,6 +1,5 @@
 package com.example.notification;
 
-
 import androidx.core.app.NotificationCompat;
 
 import android.app.Notification;
@@ -15,7 +14,7 @@ import android.os.Build;
 
 public class MyNotification {
     private final Context parent;
-    public  final String channelId = "pop channel"; // don't change
+    public final String channelId = "pop channel"; // don't change
     private final String channelName = "Rainfall"; // don't change
     private NotificationManager noti = null;
     private int notiID = 1;
@@ -56,6 +55,7 @@ public class MyNotification {
         builder.setDefaults(Notification.DEFAULT_ALL);
         builder.setContentIntent(busRoutePendingIntent);
         builder.setAutoCancel(true);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         noti.notify(notiID, builder.build());
     }

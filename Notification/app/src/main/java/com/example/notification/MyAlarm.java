@@ -27,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MyAlarm extends BroadcastReceiver {
     public static final String fileName = "alarmTime.txt";
@@ -50,16 +52,6 @@ public class MyAlarm extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("Alarm", "@@@@@@ Alram begin @@@@@");
-//        long now = System.currentTimeMillis();
-//        Weather wth = new Weather();
-//        int pop = wth.isGoingToRain(24, 61,127, now );
-//        System.out.println("@@@@@@@ pop: " + pop);
-//
-//        String str = wth.makeNotificatoinText(2, pop);
-//        MyNotification myNoti = new MyNotification(context,(int) now );
-//
-//        // notification generate
-//        myNoti.makeNotification("Will it rain?", str);
         MyBackgroundThread th = new MyBackgroundThread();
         th.setContext(context);
         th.start();
@@ -89,6 +81,7 @@ public class MyAlarm extends BroadcastReceiver {
     public void cancelAlarm() {
         if (alarmManager == null) return;
         alarmManager.cancel(getAlamPIntent(1));
+        Toast.makeText(mainActivity, "Alarm is canceled", Toast.LENGTH_LONG).show();
     }
 
     public PendingIntent getAlamPIntent(int reqCode) {

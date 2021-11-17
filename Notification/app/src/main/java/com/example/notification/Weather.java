@@ -67,23 +67,8 @@ public class Weather extends Thread {
     // use this function to get the max of pop 0~100 (integer)
     public int isGoingToRain(int duration, int x, int y, long now) {
         ret = -1000;
-
-        // make executor (worker thread)
-        ExecutorService ex = Executors.newSingleThreadExecutor();
-        ex.execute(new Runnable() {
-            @Override
-            public void run() {
-                ApiBaseTime bt = new ApiBaseTime(now);
-                calculatePops(bt, duration, x, y);
-            }
-        });
-
-        // wait executor
-        try {
-            ex.awaitTermination(2, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ApiBaseTime bt = new ApiBaseTime(now);
+        calculatePops(bt, duration, x, y);
         return ret;
     }
 
@@ -179,8 +164,6 @@ public class Weather extends Thread {
             sb.append(val).append(' ');
         sb.append('\n');
         return sb.toString();
-
     }
-
 
 }
