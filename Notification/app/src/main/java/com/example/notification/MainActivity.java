@@ -1,21 +1,12 @@
 package com.example.notification;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
-        import androidx.annotation.RequiresApi;
-        import androidx.appcompat.app.AppCompatActivity;
-
-        import android.app.AlarmManager;
-        import android.app.PendingIntent;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.os.Build;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.widget.Button;
-        import android.widget.TimePicker;
-        import android.widget.Toast;
-
-        import java.util.Calendar;
+import android.os.Build;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TimePicker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,44 +18,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MyAlarm myAlarm = new MyAlarm(this);
+        myAlarm.readTime();
+        timePicker = (TimePicker) findViewById(R.id.time_picker);
+        save = (Button) findViewById(R.id.save);
 
-        timePicker=(TimePicker)findViewById(R.id.time_picker);
-        save=(Button)findViewById(R.id.save);
-
-        save.setOnClickListener(v->{
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            int hour=timePicker.getHour();
-            int minute=timePicker.getMinute();
-            calendar.set(Calendar.HOUR_OF_DAY,hour);
-            calendar.set(Calendar.MINUTE,minute);
-
-            if (calendar.before(Calendar.getInstance())) {
-                calendar.add(Calendar.DATE, 1);
-            }
-
-            AlarmManager alarmManager=(AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-            if (alarmManager != null) {
-                Intent intent = new Intent(this, AlarmReceiver.class);
-                PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-
-
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        3l*60l*1000l, alarmIntent);
-
-
-                Toast.makeText(MainActivity.this,"알람이 저장되었습니다.",Toast.LENGTH_LONG).show();
-            }
+        if (MyAlarm.isTimeValid()) {
+            timePicker.setHour(MyAlarm.hour);
+            timePicker.setMinute(MyAlarm.min);
+        }
+        save.setOnClickListener(v -> {
+            int hour = timePicker.getHour(), min = timePicker.getMinute();
+            myAlarm.setAlarm(hour, min);
+            myAlarm.writeTime();
         });
 
         Button cancel = (Button) findViewById(R.id.cancel);
-        cancel.setOnClickListener(v->{
-
-            AlarmManager alarmManager=(AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-            if( alarmManager==null) return;
-            PendingIntent al = PendingIntent.getBroadcast(this,1,new Intent(this, AlarmReceiver.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-            alarmManager.cancel(al);
+        cancel.setOnClickListener(v -> {
+            myAlarm.cancelAlarm();
+            myAlarm.setTimeInvalid();
+            myAlarm.writeTime();
         });
     }
+
+
 }
