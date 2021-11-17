@@ -47,13 +47,24 @@ public class MainActivity extends AppCompatActivity {
             AlarmManager alarmManager=(AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
             if (alarmManager != null) {
                 Intent intent = new Intent(this, AlarmReceiver.class);
-                PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+
 
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        AlarmManager.INTERVAL_DAY, alarmIntent);
+                        3l*60l*1000l, alarmIntent);
+
 
                 Toast.makeText(MainActivity.this,"알람이 저장되었습니다.",Toast.LENGTH_LONG).show();
             }
+        });
+
+        Button cancel = (Button) findViewById(R.id.cancel);
+        cancel.setOnClickListener(v->{
+
+            AlarmManager alarmManager=(AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+            if( alarmManager==null) return;
+            PendingIntent al = PendingIntent.getBroadcast(this,1,new Intent(this, AlarmReceiver.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+            alarmManager.cancel(al);
         });
     }
 }

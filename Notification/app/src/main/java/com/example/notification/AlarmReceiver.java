@@ -28,6 +28,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private Context context;
     private String channelId="alarm_channel";
+    private static int times = 1;
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
@@ -38,17 +39,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntentWithParentStack(busRouteIntent);
         PendingIntent busRoutePendingIntent =
-                stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
+                stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
 
         final NotificationCompat.Builder notificationBuilder=new NotificationCompat.Builder(context,channelId)
                 .setSmallIcon(R.mipmap.ic_launcher).setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setAutoCancel(true)
-                .setContentTitle("알람")
-                .setContentText("뚜뚜뚜")
+                .setContentTitle("메롱")
+                .setContentText("5분마다~ "+times+"번째")
                 .setContentIntent(busRoutePendingIntent);
 
-
+        times++;
         final NotificationManager notificationManager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
