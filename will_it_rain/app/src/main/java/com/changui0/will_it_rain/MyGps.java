@@ -1,6 +1,5 @@
 package com.changui0.will_it_rain;
 
-
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,11 +20,11 @@ public class MyGps {
     public static final String fileName = "xy.txt";
     public static int x = -1, y = -1;
     private final LocationManager lm;
-    private final MainActivity mainActivity;
+    private final Context context;
 
-    public MyGps(MainActivity m) {
-        mainActivity = m;
-        this.lm = (LocationManager) m.getSystemService(Context.LOCATION_SERVICE);
+    public MyGps(Context context) {
+        this.context = context;
+        this.lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     public void enableGps() {
@@ -36,7 +35,6 @@ public class MyGps {
 
         } catch (SecurityException ex) {
         }
-
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -55,12 +53,12 @@ public class MyGps {
         y = (int) point.y;
         writeXy();
         Log.d("GPS", String.format("(x,y) is (%d, %d)", x, y));
-        Toast.makeText(mainActivity, "Location set!", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Location set!", Toast.LENGTH_LONG).show();
     }
 
     private void writeXy() {
         try {
-            OutputStreamWriter oStreamWriter = new OutputStreamWriter(mainActivity.openFileOutput(fileName, Context.MODE_PRIVATE));
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE));
             oStreamWriter.write(String.format("%d %d", x, y));
             oStreamWriter.close();
         } catch (IOException e) {
@@ -70,7 +68,7 @@ public class MyGps {
 
     public void readXy() {
         try {
-            InputStream iStream = mainActivity.openFileInput(fileName);
+            InputStream iStream = context.openFileInput(fileName);
             if (iStream != null) {
                 InputStreamReader iStreamReader = new InputStreamReader(iStream);
                 BufferedReader bufferedReader = new BufferedReader(iStreamReader);

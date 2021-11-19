@@ -1,6 +1,5 @@
 package com.changui0.will_it_rain;
 
-
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,7 +18,20 @@ public class Weather extends Thread {
 
     private final String endPoint = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?";
     private final String serviceKey = "1Y66bkrYDIVc22RQE5oIxSR7KAViZKtP4JGd21BwS31M4cYJT%2BC%2B%2F69m0AHecwDar5bZrkYmMePhuiA3Qcay3A%3D%3D";
-    private final int ERROR = -1, NOT_POP = -2, MISSING1 = -900, MISSING2 = 900;// POP: probability of precipitation (rainfall)
+
+    public enum ERROR_CODE {
+        ERROR(-1), NOT_POP(-2), MISSNG1(-900), MISSING2(900), INVALID_XY(-3), URL_NULL(-4), COMMUNICATION(-5), API(-6);
+        private int i;
+
+        ERROR_CODE(int i) {
+            this.i = i;
+        }
+
+        public int getVal() {
+            return i;
+        }
+    }
+
     private final int ROWS_PER_HOUR = 12;
 
     private class ApiBaseTime { // a helper class for using api base time
@@ -34,12 +46,10 @@ public class Weather extends Thread {
             now = System.currentTimeMillis() - TEM_MIN_MS;
             setBase();
         }
-
         public ApiBaseTime(long now) { // get specific moment
             this.now = now - TEM_MIN_MS;
             setBase();
         }
-
         private void setBase() {
             Date date = new Date(now);
             int hour = Integer.parseInt(timeFormat.format(date));
@@ -48,10 +58,9 @@ public class Weather extends Thread {
             if (hour < newHour) { // hour:0~1 and baseHour:23
                 date = new Date(now - ONE_DAY_MS); // use yesterday's data
             }
-            baseTime = newHour + "00";
+            baseTime = String.format("%02d", newHour) + "00";
             baseDate = dateFormat.format(date);
         }
-
         private int getBaseTime(int hour24) {
             if (hour24 % 3 == 2) return hour24; // 2, 5, 8, 11, 14, 17, 20, 23
             else if (hour24 < 2) return 23; // 0,1 => 23
@@ -68,9 +77,9 @@ public class Weather extends Thread {
     }
 
     public String makeNotificatoinText(int duration, int maxPop) {
-        String str = "There's an error";
+        String str = "Error : ";
         if (maxPop < 0 || 100 < maxPop)
-            return str;
+            return str + maxPop;
         str = String.format("향후 %d시간 내의 최대 강수확률은 %d%%입니다.", duration, maxPop);
         return str;
     }
@@ -83,8 +92,8 @@ public class Weather extends Thread {
         sb.append("&pageNo=").append(pageNo);
         sb.append("&numOfRows=").append(numRow);
         sb.append("&dataType=").append("JSON");
-        sb.append("&base_date=").append(String.format("%02d",date));
-        sb.append("&base_time=").append(String.format("%02d",time));
+        sb.append("&base_date=").append(date);
+        sb.append("&base_time=").append(time);
         sb.append("&nx=").append(x);
         sb.append("&ny=").append(y);
         URL url;
@@ -108,7 +117,7 @@ public class Weather extends Thread {
             if (conn.getResponseCode() == 200) {
                 bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             } else
-                return ERROR;
+                return ERROR_CODE.COMMUNICATION.getVal();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
@@ -120,13 +129,13 @@ public class Weather extends Thread {
             JSONArray itemArray = mainObject.getJSONObject("response").getJSONObject("body").getJSONObject("items").getJSONArray("item");
             JSONObject item = itemArray.getJSONObject(0);
             if (item.getString("category").compareTo("POP") != 0)
-                return NOT_POP;
+                return ERROR_CODE.NOT_POP.getVal();
             return Integer.parseInt(item.getString("fcstValue"));
 
         } catch (Exception e) {
             Log.d("Api Error", stringBuilder.toString());
             Log.d("Api Error Url", url.toString());
-            return ERROR;
+            return ERROR_CODE.API.getVal();
         }
     }
 
@@ -138,9 +147,7 @@ public class Weather extends Thread {
         try {
             for (int i = 0; i < duration; i++) {
                 pops[i] = getPop(bt, ROWS_PER_HOUR * i + offset, x, y);
-                if (pops[i] == ERROR) ;
-                else if (pops[i] == MISSING1 || pops[i] == MISSING2) ;
-                else if (pops[i] == NOT_POP) {
+                if (pops[i] == ERROR_CODE.NOT_POP.getVal()) {
                     offset++;
                     i--;
                 }

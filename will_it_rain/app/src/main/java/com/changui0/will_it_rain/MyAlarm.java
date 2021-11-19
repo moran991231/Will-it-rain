@@ -20,8 +20,10 @@ public class MyAlarm extends BroadcastReceiver {
     public static final String fileName = "alarmTime.txt";
     public static int hour = -1, min = -1;
     private Context context;
-    private String channelId = "alarm_channel";
+    private final String channelId = "alarm_channel"; // don't change
     private final String channelName = "Probability of Rainfall"; // don't change
+    private final String actionName = "alarm_action";
+    private final int requestCode=5;
     private static int times;
     private AlarmManager alarmManager;
 
@@ -31,16 +33,30 @@ public class MyAlarm extends BroadcastReceiver {
     public MyAlarm(Context context) {
         this.context = context;
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
     }
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("Alarm", "@@@@@@ Alram begin @@@@@");
+        long now = System.currentTimeMillis();
+        MyGps myGps = new  MyGps(context);
+        if(! MyGps.isXyValid())
+            myGps.readXy();
+
         MyBackgroundThread th = new MyBackgroundThread();
         th.setContext(context);
+        th.setNow(now);
         th.start();
+        try {
+            th.join(10*60*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        MyNotification myNoti = new  MyNotification(context, (int) now);
+
+        // notification generate
+        myNoti.makeNotification("Will it rain?", th.resultStr);
         Log.d("Alarm", "@@@@@@ Alram end @@@@@");
     }
 
@@ -49,16 +65,18 @@ public class MyAlarm extends BroadcastReceiver {
         this.min = minute;
         if (alarmManager == null) return;
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        calendar.setTimeInMillis(now);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
+        long alarmInterval = AlarmManager.INTERVAL_DAY;
 
         if (calendar.before(Calendar.getInstance()))
             calendar.add(Calendar.DATE, 1);
 
-        PendingIntent alarmIntent = getAlamPIntent(1);
+        PendingIntent alarmIntent = getAlamPIntent(requestCode,PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
+                alarmInterval, alarmIntent);
         String str = String.format("알림이 %d시 %d분에 저장되었습니다.", hour, minute);
         Toast.makeText(context, str, Toast.LENGTH_LONG).show();
 
@@ -66,14 +84,21 @@ public class MyAlarm extends BroadcastReceiver {
 
     public void cancelAlarm() {
         if (alarmManager == null) return;
-        alarmManager.cancel(getAlamPIntent(1));
-        Toast.makeText(context, "Alarm is canceled", Toast.LENGTH_LONG).show();
+        PendingIntent pi = getAlamPIntent(requestCode,PendingIntent.FLAG_UPDATE_CURRENT);
+        if(pi !=null){
+            alarmManager.cancel(pi);
+            pi.cancel();
+            Toast.makeText(context, "Alarm is canceled", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "There's no alarm to be canceled", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
-    public PendingIntent getAlamPIntent(int reqCode) {
+    public PendingIntent getAlamPIntent(int reqCode, int flags) {
         Intent intent = new Intent(context, MyAlarm.class);
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent ret = PendingIntent.getBroadcast(context, reqCode, intent, flags);
+        intent.setAction(actionName);
+        PendingIntent ret = PendingIntent.getBroadcast(context.getApplicationContext(), reqCode, intent, flags);
         return ret;
     }
 

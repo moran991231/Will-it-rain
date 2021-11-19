@@ -4,27 +4,23 @@ import android.content.Context;
 
 public class MyBackgroundThread extends Thread {
     private Context context;
-
+    private long now;
+    public String resultStr = "result";
     public void setContext(Context context) {
         this.context = context;
     }
+    public void setNow(long now){this.now = now;}
 
     @Override
-    public void run() {
-        long now = System.currentTimeMillis();
+    public  void run() {
         Weather wth = new  Weather();
-         MyGps myGps = new  MyGps(MainActivity.mainActivity);
-        if(! MyGps.isXyValid()){
-            myGps.readXy();
-        }
-
-        int pop = wth.isGoingToRain(24,  MyGps.x,  MyGps.y, now);
+        int pop=-1;
+        if(MyGps.isXyValid())
+            pop = wth.isGoingToRain(24,  MyGps.x,  MyGps.y, now);
+        else
+            pop = Weather.ERROR_CODE.INVALID_XY.getVal();
         System.out.println("@@@@@@@ pop: " + pop);
 
-        String str = wth.makeNotificatoinText(24, pop);
-         MyNotification myNoti = new  MyNotification(context, (int) now);
-
-        // notification generate
-        myNoti.makeNotification("Will it rain?", str);
+        resultStr = wth.makeNotificatoinText(24, pop);
     }
 }

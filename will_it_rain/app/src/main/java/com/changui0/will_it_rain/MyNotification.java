@@ -16,8 +16,9 @@ public class MyNotification {
     private final Context parent;
     public final String channelId = "pop channel"; // don't change
     private final String channelName = "Rainfall"; // don't change
+    private final int reqCode =100;
     private NotificationManager noti = null;
-    private int notiID = 1;
+    private int notiID = 10;
     public static final int DefaultNotiID = 1;
 
     public MyNotification(Context parent, int notiID) {
@@ -47,7 +48,7 @@ public class MyNotification {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(parent);
         stackBuilder.addNextIntentWithParentStack(busRouteIntent);
         PendingIntent busRoutePendingIntent =
-                stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                stackBuilder.getPendingIntent(reqCode, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(parent, channelId);
         builder.setContentTitle(title).setContentText(text);
