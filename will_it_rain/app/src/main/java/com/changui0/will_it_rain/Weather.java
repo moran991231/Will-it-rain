@@ -3,6 +3,7 @@ package com.changui0.will_it_rain;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,7 +21,15 @@ public class Weather extends Thread {
     private final String serviceKey = "1Y66bkrYDIVc22RQE5oIxSR7KAViZKtP4JGd21BwS31M4cYJT%2BC%2B%2F69m0AHecwDar5bZrkYmMePhuiA3Qcay3A%3D%3D";
 
     public enum ERROR_CODE {
-        ERROR(-1), NOT_POP(-2), MISSNG1(-900), MISSING2(900), INVALID_XY(-3), URL_NULL(-4), COMMUNICATION(-5), API(-6);
+        ERROR(-1),
+        NOT_POP(-2),
+        MISSNG1(-900),
+        MISSING2(900),
+        INVALID_XY(-3),
+        URL_NULL(-4),
+        COMMUNICATION(-5),
+        API(-6),
+        API_JSON(-7);
         private int i;
 
         ERROR_CODE(int i) {
@@ -46,10 +55,12 @@ public class Weather extends Thread {
             now = System.currentTimeMillis() - TEM_MIN_MS;
             setBase();
         }
+
         public ApiBaseTime(long now) { // get specific moment
             this.now = now - TEM_MIN_MS;
             setBase();
         }
+
         private void setBase() {
             Date date = new Date(now);
             int hour = Integer.parseInt(timeFormat.format(date));
@@ -61,6 +72,7 @@ public class Weather extends Thread {
             baseTime = String.format("%02d", newHour) + "00";
             baseDate = dateFormat.format(date);
         }
+
         private int getBaseTime(int hour24) {
             if (hour24 % 3 == 2) return hour24; // 2, 5, 8, 11, 14, 17, 20, 23
             else if (hour24 < 2) return 23; // 0,1 => 23
@@ -109,6 +121,8 @@ public class Weather extends Thread {
     private int getPop(ApiBaseTime bt, int page, int x, int y) {
         StringBuilder stringBuilder = new StringBuilder();
         URL url = makeURL(page, 1, bt.baseDate, bt.baseTime, x, y);
+        if (url == null)
+            return ERROR_CODE.URL_NULL.getVal();
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -124,19 +138,24 @@ public class Weather extends Thread {
             }
             bufferedReader.close();
             conn.disconnect();
-
+        } catch (Exception e) {
+            Log.d("Api Error", stringBuilder.toString());
+            Log.d("Api Error Url", url.toString());
+            return ERROR_CODE.API.getVal();
+        }
+        try {
             JSONObject mainObject = new JSONObject(stringBuilder.toString());
             JSONArray itemArray = mainObject.getJSONObject("response").getJSONObject("body").getJSONObject("items").getJSONArray("item");
             JSONObject item = itemArray.getJSONObject(0);
             if (item.getString("category").compareTo("POP") != 0)
                 return ERROR_CODE.NOT_POP.getVal();
             return Integer.parseInt(item.getString("fcstValue"));
-
-        } catch (Exception e) {
-            Log.d("Api Error", stringBuilder.toString());
-            Log.d("Api Error Url", url.toString());
-            return ERROR_CODE.API.getVal();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d("Api Json Error", stringBuilder.toString());
+            return ERROR_CODE.API_JSON.getVal();
         }
+
     }
 
     private int ret; // used in getPop() and isGoingToRain()
@@ -144,18 +163,15 @@ public class Weather extends Thread {
     private void calculatePops(ApiBaseTime bt, int duration, int x, int y) {
         int[] pops = new int[duration];
         int offset = 8;
-        try {
-            for (int i = 0; i < duration; i++) {
-                pops[i] = getPop(bt, ROWS_PER_HOUR * i + offset, x, y);
-                if (pops[i] == ERROR_CODE.NOT_POP.getVal()) {
-                    offset++;
-                    i--;
-                }
-                // else: do nothing
+        for (int i = 0; i < duration; i++) {
+            pops[i] = getPop(bt, ROWS_PER_HOUR * i + offset, x, y);
+            if (pops[i] == ERROR_CODE.NOT_POP.getVal()) {
+                offset++;
+                i--;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            // else: do nothing
         }
+
         Log.d("Api Ret", arr2Str(pops));
         Arrays.sort(pops);
         ret = pops[pops.length - 1];

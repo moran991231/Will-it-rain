@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,9 +24,10 @@ public class MyAlarm extends BroadcastReceiver {
     private final String channelId = "alarm_channel"; // don't change
     private final String channelName = "Probability of Rainfall"; // don't change
     private final String actionName = "alarm_action";
-    private final int requestCode=5;
+    private final int requestCode = 5;
     private static int times;
     private AlarmManager alarmManager;
+    private final long alarmInterval = AlarmManager.INTERVAL_DAY;
 
     public MyAlarm() {
     }
@@ -37,10 +39,17 @@ public class MyAlarm extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+//        PowerManager.WakeLock wakeLock =((PowerManager)context.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "MyAlarm");
+//        wakeLock.acquire();
         Log.d("Alarm", "@@@@@@ Alram begin @@@@@");
         long now = System.currentTimeMillis();
-        MyGps myGps = new  MyGps(context);
-        if(! MyGps.isXyValid())
+        MyAlarm myAlarm = new MyAlarm(context);
+        if (!MyAlarm.isTimeValid())
+            myAlarm.readTime();
+        myAlarm.readTime();
+        myAlarm.setAlarm(MyAlarm.hour, MyAlarm.min);
+        MyGps myGps = new MyGps(context);
+        if (!MyGps.isXyValid())
             myGps.readXy();
 
         MyBackgroundThread th = new MyBackgroundThread();
@@ -48,12 +57,12 @@ public class MyAlarm extends BroadcastReceiver {
         th.setNow(now);
         th.start();
         try {
-            th.join(10*60*1000);
+            th.join(10 * 60 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        MyNotification myNoti = new  MyNotification(context, (int) now);
+        MyNotification myNoti = new MyNotification(context, (int) now);
 
         // notification generate
         myNoti.makeNotification("Will it rain?", th.resultStr);
@@ -69,27 +78,23 @@ public class MyAlarm extends BroadcastReceiver {
         calendar.setTimeInMillis(now);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
-        long alarmInterval = AlarmManager.INTERVAL_DAY;
 
-        if (calendar.before(Calendar.getInstance()))
-            calendar.add(Calendar.DATE, 1);
+        long next = calendar.getTimeInMillis();
+        while (next <= now)
+            next += alarmInterval;
 
-        PendingIntent alarmIntent = getAlamPIntent(requestCode,PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                alarmInterval, alarmIntent);
-        String str = String.format("알림이 %d시 %d분에 저장되었습니다.", hour, minute);
-        Toast.makeText(context, str, Toast.LENGTH_LONG).show();
-
+        PendingIntent alarmIntent = getAlamPIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent);
     }
 
     public void cancelAlarm() {
         if (alarmManager == null) return;
-        PendingIntent pi = getAlamPIntent(requestCode,PendingIntent.FLAG_UPDATE_CURRENT);
-        if(pi !=null){
+        PendingIntent pi = getAlamPIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (pi != null) {
             alarmManager.cancel(pi);
             pi.cancel();
             Toast.makeText(context, "Alarm is canceled", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(context, "There's no alarm to be canceled", Toast.LENGTH_SHORT).show();
         }
 
@@ -107,7 +112,7 @@ public class MyAlarm extends BroadcastReceiver {
         return false;
     }
 
-    public void setTimeInvalid() {
+    public static void setTimeInvalid() {
         hour = min = -1;
     }
 
