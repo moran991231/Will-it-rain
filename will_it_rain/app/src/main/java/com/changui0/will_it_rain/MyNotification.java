@@ -1,21 +1,27 @@
-package com.example.weather_api_test;
-
-import androidx.core.app.NotificationCompat;
+package com.changui0.will_it_rain;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Build;
 
+import androidx.core.app.NotificationCompat;
+
 public class MyNotification {
-    private final MainActivity parent;
-    private final String channelId = "normal pop noti"; // don't change
-    private final String channelName = "Probability of Rainfall"; // don't change
+    private final Context parent;
+    public final String channelId = "pop channel"; // don't change
+    private final String channelName = "Rainfall"; // don't change
+    private final int reqCode = 100;
     private NotificationManager noti = null;
-    private int notiID = 1;
+    private int notiID = 10;
     public static final int DefaultNotiID = 1;
 
-    public MyNotification(MainActivity parent, int notiID) {
+    public MyNotification(Context parent, int notiID) {
         this.parent = parent;
         this.notiID = notiID;
         noti = (NotificationManager) parent.getSystemService(parent.NOTIFICATION_SERVICE);
@@ -36,10 +42,22 @@ public class MyNotification {
     }
 
     public void makeNotification(String title, String text) {
+
+        Intent busRouteIntent = new Intent(parent, MainActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(parent);
+        stackBuilder.addNextIntentWithParentStack(busRouteIntent);
+        PendingIntent busRoutePendingIntent =
+                stackBuilder.getPendingIntent(reqCode, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(parent, channelId);
         builder.setContentTitle(title).setContentText(text);
         builder.setSmallIcon(R.drawable.ic_launcher_foreground);
         builder.setDefaults(Notification.DEFAULT_ALL);
+        builder.setContentIntent(busRoutePendingIntent);
+        builder.setAutoCancel(true);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         noti.notify(notiID, builder.build());
     }
 
