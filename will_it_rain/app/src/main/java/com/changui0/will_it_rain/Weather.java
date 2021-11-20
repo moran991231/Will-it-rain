@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -28,8 +29,11 @@ public class Weather extends Thread {
         INVALID_XY(-3),
         URL_NULL(-4),
         COMMUNICATION(-5),
-        API(-6),
-        API_JSON(-7);
+        API_OPEN(-6),
+        API_READ(-7),
+        API_CLOSE(-8),
+        API_JSON(-9),
+        INVALID_ERROR_CODE(Integer.MAX_VALUE);
         private int i;
 
         ERROR_CODE(int i) {
@@ -38,6 +42,13 @@ public class Weather extends Thread {
 
         public int getVal() {
             return i;
+        }
+
+        public static ERROR_CODE getCode(int val) {
+            for (ERROR_CODE e : ERROR_CODE.values())
+                if (e.getVal() == val)
+                    return e;
+            return ERROR_CODE.INVALID_ERROR_CODE;
         }
     }
 
@@ -88,10 +99,15 @@ public class Weather extends Thread {
         return ret;
     }
 
+    public static boolean isPopValid(int pop) {
+        if (pop < 0 || 100 < pop) return false;
+        return true;
+    }
+
     public String makeNotificatoinText(int duration, int maxPop) {
         String str = "Error : ";
-        if (maxPop < 0 || 100 < maxPop)
-            return str + maxPop;
+        if (!isPopValid(maxPop))
+            return str + ERROR_CODE.getCode(maxPop);
         str = String.format("향후 %d시간 내의 최대 강수확률은 %d%%입니다.", duration, maxPop);
         return str;
     }
@@ -119,30 +135,45 @@ public class Weather extends Thread {
     }
 
     private int getPop(ApiBaseTime bt, int page, int x, int y) {
-        StringBuilder stringBuilder = new StringBuilder();
         URL url = makeURL(page, 1, bt.baseDate, bt.baseTime, x, y);
         if (url == null)
             return ERROR_CODE.URL_NULL.getVal();
-        try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
 
-            BufferedReader bufferedReader;
+        HttpURLConnection conn;
+        BufferedReader bufferedReader;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("Api Error Url", url.toString());
+            return ERROR_CODE.API_OPEN.getVal();
+        }
+        try {
             if (conn.getResponseCode() == 200) {
                 bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             } else
                 return ERROR_CODE.COMMUNICATION.getVal();
+
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
             }
+
             bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("Api Read Error", stringBuilder.toString());
+            return ERROR_CODE.API_READ.getVal();
+        }
+        try {
             conn.disconnect();
         } catch (Exception e) {
-            Log.d("Api Error", stringBuilder.toString());
-            Log.d("Api Error Url", url.toString());
-            return ERROR_CODE.API.getVal();
+            e.printStackTrace();
+            return ERROR_CODE.API_CLOSE.getVal();
         }
+
         try {
             JSONObject mainObject = new JSONObject(stringBuilder.toString());
             JSONArray itemArray = mainObject.getJSONObject("response").getJSONObject("body").getJSONObject("items").getJSONArray("item");

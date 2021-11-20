@@ -19,10 +19,14 @@ public class MyBackgroundThread extends Thread {
     public void run() {
         Weather wth = new Weather();
         int pop = -1;
-        if (MyGps.isXyValid())
+        if (MyGps.isXyValid()) {
             pop = wth.isGoingToRain(24, MyGps.x, MyGps.y, now);
-        else
-            pop = Weather.ERROR_CODE.INVALID_XY.getVal();
+            if (!Weather.isPopValid(pop)) {
+                pop = wth.isGoingToRain(24, MyGps.x, MyGps.y, now);
+            }
+
+        } else pop = Weather.ERROR_CODE.INVALID_XY.getVal();
+
         resultStr = wth.makeNotificatoinText(24, pop);
     }
 }

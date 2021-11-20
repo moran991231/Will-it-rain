@@ -43,7 +43,8 @@ public class MyGps {
             lm.removeUpdates(mLocationListener);  //  미수신할때는 반드시 자원해체를 해주어야 한다
         }
     };
-    public void setXyFromLocation(Location location){
+
+    public void setXyFromLocation(Location location) {
 
         double longitude = location.getLongitude(); //경도
         double latitude = location.getLatitude();   //위도
@@ -85,8 +86,9 @@ public class MyGps {
     public static boolean isXyValid() {
         return LlXyConverter.isXyValid(new Point2D(x, y));
     }
-    public static void setXyInvalid(){
-        x=y=-1;
+
+    public static void setXyInvalid() {
+        x = y = -1;
     }
 
 }

@@ -84,7 +84,9 @@ public class MyAlarm extends BroadcastReceiver {
             next += alarmInterval;
 
         PendingIntent alarmIntent = getAlamPIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent);
+//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent);
+        AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(next, alarmIntent);
+        alarmManager.setAlarmClock(info, alarmIntent);
     }
 
     public void cancelAlarm() {

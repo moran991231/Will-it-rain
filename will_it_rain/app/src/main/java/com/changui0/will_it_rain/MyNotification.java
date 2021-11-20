@@ -16,7 +16,7 @@ public class MyNotification {
     private final Context parent;
     public final String channelId = "pop channel"; // don't change
     private final String channelName = "Rainfall"; // don't change
-    private final int reqCode =100;
+    private final int reqCode = 100;
     private NotificationManager noti = null;
     private int notiID = 10;
     public static final int DefaultNotiID = 1;
