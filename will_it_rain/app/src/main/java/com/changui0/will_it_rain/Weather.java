@@ -104,6 +104,7 @@ public class Weather extends Thread {
         return true;
     }
 
+    // use this function to get the string to notify
     public String makeNotificatoinText(int duration, int maxPop) {
         String str = "Error : ";
         if (!isPopValid(maxPop))
