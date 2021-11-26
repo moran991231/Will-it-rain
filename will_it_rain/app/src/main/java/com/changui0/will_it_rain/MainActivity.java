@@ -1,10 +1,5 @@
 package com.changui0.will_it_rain;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +10,12 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.widget.Button;
-
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -38,6 +37,27 @@ public class MainActivity extends AppCompatActivity {
             {
                 startActivity(intent);
             }
+        });
+
+        Button btn1 = (Button) findViewById(R.id.getPop);
+        btn1.setOnClickListener(v -> {
+            long now = System.currentTimeMillis();
+
+            MyGps myGps = new MyGps(MainActivity.this);
+            if (!MyGps.isXyValid())
+                myGps.readXy();
+
+            MyBackgroundThread th = new MyBackgroundThread();
+            th.setContext(MainActivity.this);
+            th.setNow(now);
+            th.start();
+            try {
+                th.join(10 * 60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Toast.makeText(MainActivity.this, th.resultStr,Toast.LENGTH_LONG).show();
         });
 
 
