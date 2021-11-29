@@ -26,7 +26,6 @@ public class AlarmActivity extends AppCompatActivity {
         Button btn = (Button) findViewById(R.id.timeSave);
         TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
 
-
         btn.setOnClickListener(v -> {
             int hour = timePicker.getHour(), min = timePicker.getMinute();
             myAlarm.setAlarm(hour, min);
