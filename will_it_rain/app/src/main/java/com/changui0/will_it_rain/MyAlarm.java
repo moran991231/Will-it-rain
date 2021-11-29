@@ -39,19 +39,22 @@ public class MyAlarm extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        PowerManager.WakeLock wakeLock =((PowerManager)context.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "MyAlarm");
-//        wakeLock.acquire();
         Log.d("Alarm", "@@@@@@ Alram begin @@@@@");
         long now = System.currentTimeMillis();
+
+        // set next alarm
         MyAlarm myAlarm = new MyAlarm(context);
         if (!MyAlarm.isTimeValid())
             myAlarm.readTime();
         myAlarm.readTime();
         myAlarm.setAlarm(MyAlarm.hour, MyAlarm.min);
+
+        // get valid x, y
         MyGps myGps = new MyGps(context);
         if (!MyGps.isXyValid())
             myGps.readXy();
 
+        // thread (api)
         MyBackgroundThread th = new MyBackgroundThread();
         th.setContext(context);
         th.setNow(now);
@@ -62,9 +65,8 @@ public class MyAlarm extends BroadcastReceiver {
             e.printStackTrace();
         }
 
-        MyNotification myNoti = new MyNotification(context, (int) now);
-
         // notification generate
+        MyNotification myNoti = new MyNotification(context, (int) now);
         myNoti.makeNotification("Will it rain?", th.resultStr);
         Log.d("Alarm", "@@@@@@ Alram end @@@@@");
     }
@@ -84,7 +86,6 @@ public class MyAlarm extends BroadcastReceiver {
             next += alarmInterval;
 
         PendingIntent alarmIntent = getAlamPIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
-//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent);
         AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(next, alarmIntent);
         alarmManager.setAlarmClock(info, alarmIntent);
     }
