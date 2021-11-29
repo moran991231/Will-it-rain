@@ -74,7 +74,8 @@ public class MyAlarm extends BroadcastReceiver {
     public void setAlarm(int hour, int minute) {
         this.hour = hour;
         this.min = minute;
-        if (alarmManager == null) return;
+        if (alarmManager == null)
+            return;
         Calendar calendar = Calendar.getInstance();
         long now = System.currentTimeMillis();
         calendar.setTimeInMillis(now);
@@ -91,7 +92,8 @@ public class MyAlarm extends BroadcastReceiver {
     }
 
     public void cancelAlarm() {
-        if (alarmManager == null) return;
+        if (alarmManager == null)
+            return;
         PendingIntent pi = getAlamPIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
         if (pi != null) {
             alarmManager.cancel(pi);
@@ -111,7 +113,8 @@ public class MyAlarm extends BroadcastReceiver {
     }
 
     public static boolean isTimeValid() {
-        if (0 <= hour && hour <= 23 && 0 <= min && min <= 59) return true;
+        if (0 <= hour && hour <= 23 && 0 <= min && min <= 59)
+            return true;
         return false;
     }
 
@@ -121,7 +124,8 @@ public class MyAlarm extends BroadcastReceiver {
 
     public void writeTime() {
         try {
-            OutputStreamWriter oStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE));
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(
+                    context.openFileOutput(fileName, Context.MODE_PRIVATE));
             oStreamWriter.write(String.format("%d %d", hour, min));
             oStreamWriter.close();
         } catch (IOException e) {
