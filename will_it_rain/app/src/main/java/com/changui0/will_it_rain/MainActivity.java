@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Toast.makeText(MainActivity.this, th.resultStr,Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, th.resultStr, Toast.LENGTH_LONG).show();
         });
 
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             } else {
                 flc.getLastLocation().addOnSuccessListener(MainActivity.this, location -> {
@@ -93,26 +93,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void OnCheckPermission() {
         int ok = PackageManager.PERMISSION_GRANTED;
-        String[] permisson = new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION };
+        String[] permisson = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != ok ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != ok) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION },
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
                         PERMISSIONS_REQUEST);
             } else {
                 ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION },
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
                         PERMISSIONS_REQUEST);
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SCHEDULE_EXACT_ALARM) != ok) {
-                ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.SCHEDULE_EXACT_ALARM },
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM},
                         PERMISSIONS_REQUEST);
 
             }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grandResults) {
+                                           @NonNull int[] grandResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grandResults);
 
         switch (requestCode) {
