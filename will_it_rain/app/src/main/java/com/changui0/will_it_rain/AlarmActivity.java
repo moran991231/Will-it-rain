@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-
 public class AlarmActivity extends AppCompatActivity {
     MainActivity mainActivity;
 
@@ -20,11 +19,12 @@ public class AlarmActivity extends AppCompatActivity {
         mainActivity = MainActivity.mainActivity;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-        Button btn = (Button) findViewById(R.id.timeSave);
-        TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
 
         MyAlarm myAlarm = new MyAlarm(mainActivity);
         myAlarm.readTime();
+
+        Button btn = (Button) findViewById(R.id.timeSave);
+        TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
 
         btn.setOnClickListener(v -> {
             int hour = timePicker.getHour(), min = timePicker.getMinute();
