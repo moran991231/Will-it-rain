@@ -52,7 +52,7 @@ public class MyNotification {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(parent, channelId);
         builder.setContentTitle(title).setContentText(text);
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        builder.setSmallIcon(R.mipmap.ic_launcher_foreground);
         builder.setDefaults(Notification.DEFAULT_ALL);
         builder.setContentIntent(busRoutePendingIntent);
         builder.setAutoCancel(true);

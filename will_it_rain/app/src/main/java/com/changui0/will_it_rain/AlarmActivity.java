@@ -24,12 +24,10 @@ public class AlarmActivity extends AppCompatActivity {
 
         MyAlarm myAlarm = new MyAlarm(mainActivity);
         myAlarm.readTime();
-        if(0<= MyAlarm.hour&&MyAlarm.hour<=23 && 0<= MyAlarm.min && MyAlarm.min<=59) {
+        if (0 <= MyAlarm.hour && MyAlarm.hour <= 23 && 0 <= MyAlarm.min && MyAlarm.min <= 59) {
             timePicker.setHour(MyAlarm.hour);
             timePicker.setMinute(MyAlarm.min);
         }
-
-
 
 
         btn.setOnClickListener(v -> {
