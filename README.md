@@ -1,9 +1,10 @@
 # Will-it-rain
 창의공학기초설계 서울시립대 2021-Fall (박재선, 강다현, 강형원, 유영호)
 
-<img src="./img/main_img.jpg" style="zoom:20%;" /> <img src="./img/time_set.jpg" style="zoom:20%;" />
+<img src="./img/main_img.jpg" width="30%" height="30%" /> <img src="./img/time_set.jpg" width="30%" height="30%" />
 
-<img src="./img/noti1.jpg" style="zoom:33%;" />  <img src="./img/noti2.jpg" style="zoom:33%;" />
+<img src="./img/noti1.jpg" width="30%" height="30%" />  
+<img src="./img/noti2.jpg" width="30%" height="30%" />
 
 ## 주제 요약
 
