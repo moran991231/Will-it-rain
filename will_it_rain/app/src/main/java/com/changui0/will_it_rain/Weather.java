@@ -34,7 +34,6 @@ public class Weather extends Thread {
         API_CLOSE(-8),
         API_JSON(-9),
         INVALID_ERROR_CODE(Integer.MAX_VALUE);
-
         private int i;
 
         ERROR_CODE(int i) {
