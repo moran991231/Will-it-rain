@@ -85,9 +85,12 @@ public class Weather extends Thread {
         }
 
         private int getBaseTime(int hour24) {
-            if (hour24 % 3 == 2) return hour24; // 2, 5, 8, 11, 14, 17, 20, 23
-            else if (hour24 < 2) return 23; // 0,1 => 23
-            else return hour24 - hour24 % 3 - 1; // else
+            if (hour24 % 3 == 2)
+                return hour24; // 2, 5, 8, 11, 14, 17, 20, 23
+            else if (hour24 < 2)
+                return 23; // 0,1 => 23
+            else
+                return hour24 - hour24 % 3 - 1; // else
         }
     }
 
@@ -100,10 +103,12 @@ public class Weather extends Thread {
     }
 
     public static boolean isPopValid(int pop) {
-        if (pop < 0 || 100 < pop) return false;
+        if (pop < 0 || 100 < pop)
+            return false;
         return true;
     }
 
+    // use this function to get the string to notify
     public String makeNotificatoinText(int duration, int maxPop) {
         String str = "Error : ";
         if (!isPopValid(maxPop))
@@ -130,7 +135,7 @@ public class Weather extends Thread {
         } catch (MalformedURLException e) {
             url = null;
         }
-//        Log.d("Api URL", sb.toString());
+        // Log.d("Api URL", sb.toString());
         return url;
     }
 
@@ -176,7 +181,8 @@ public class Weather extends Thread {
 
         try {
             JSONObject mainObject = new JSONObject(stringBuilder.toString());
-            JSONArray itemArray = mainObject.getJSONObject("response").getJSONObject("body").getJSONObject("items").getJSONArray("item");
+            JSONArray itemArray = mainObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+                    .getJSONArray("item");
             JSONObject item = itemArray.getJSONObject(0);
             if (item.getString("category").compareTo("POP") != 0)
                 return ERROR_CODE.NOT_POP.getVal();

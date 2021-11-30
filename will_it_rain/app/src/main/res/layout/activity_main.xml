@@ -36,7 +36,7 @@
         android:layout_marginStart="68dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="41dp"
-        android:text="내일"
+        android:text="오늘"
         android:textColor="@color/black"
         android:textSize="48sp"
         android:textStyle="bold"
@@ -99,27 +99,6 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:backgroundTint="#EFEDED"
         tools:textSize="24sp"
-        tools:textStyle="bold" />
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="109dp"
-        android:layout_marginTop="152dp"
-        android:layout_marginEnd="109dp"
-        android:backgroundTint="#EFEDED"
-        android:text="네/아니요"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:backgroundTint="#EFEDED"
-        tools:textColor="@color/black"
-        tools:textSize="30dp"
         tools:textStyle="bold" />
 
 
