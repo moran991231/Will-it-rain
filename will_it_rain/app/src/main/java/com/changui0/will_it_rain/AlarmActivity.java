@@ -19,12 +19,18 @@ public class AlarmActivity extends AppCompatActivity {
         mainActivity = MainActivity.mainActivity;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
+        Button btn = (Button) findViewById(R.id.timeSave);
+        TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
 
         MyAlarm myAlarm = new MyAlarm(mainActivity);
         myAlarm.readTime();
+        if(0<= MyAlarm.hour&&MyAlarm.hour<=23 && 0<= MyAlarm.min && MyAlarm.min<=59) {
+            timePicker.setHour(MyAlarm.hour);
+            timePicker.setMinute(MyAlarm.min);
+        }
 
-        Button btn = (Button) findViewById(R.id.timeSave);
-        TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
+
+
 
         btn.setOnClickListener(v -> {
             int hour = timePicker.getHour(), min = timePicker.getMinute();
